@@ -2,27 +2,39 @@ package org.umdpl.mvvmFirestore;
 
 import android.util.Log;
 
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.umdpl.mvvmFirestore.adapter.DetailAdapter;
+import org.umdpl.mvvmFirestore.model.Title;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nullable;
 
 import androidx.lifecycle.LiveData;
 
-//ADD GENERICS
-public class FirebaseQueryLivedata<T> extends LiveData<DocumentSnapshot> implements EventListener<DocumentSnapshot> {
+public class FirebaseQueryLivedata<T> extends LiveData<QuerySnapshot> implements EventListener<QuerySnapshot> {
 
     public static final String TAG = "FirebaseQueryLiveData";
     final Class<T> typeParameterClass;
-    private DocumentReference documentReference;
+    private QuerySnapshot querySnapshot;
     private ListenerRegistration listenerRegistration;
+    Query query;
+    DetailAdapter adapter;
 
-    public FirebaseQueryLivedata(Class<T> typeParameterClass, DocumentReference documentReference) {
+    public DetailAdapter getAdapter() {
+        return adapter;
+    }
+
+    public FirebaseQueryLivedata(Class<T> typeParameterClass, Query query) {
         this.typeParameterClass = typeParameterClass;
-        this.documentReference = documentReference;
+        this.query = query;
     }
 
     @Override
@@ -31,7 +43,7 @@ public class FirebaseQueryLivedata<T> extends LiveData<DocumentSnapshot> impleme
 
         Log.d(TAG, "onActive");
         if (listenerRegistration == null) {
-            listenerRegistration = documentReference.addSnapshotListener(this);
+            listenerRegistration = query.addSnapshotListener(this);
         }
     }
 
@@ -45,12 +57,18 @@ public class FirebaseQueryLivedata<T> extends LiveData<DocumentSnapshot> impleme
         }
     }
 
-    @Override
-    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
-        if (documentSnapshot != null && documentSnapshot.exists()) {
-            documentSnapshot.toObject(typeParameterClass);
-            setValue(documentSnapshot);
 
+    @Override
+    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+        if (e != null) {
+            Log.w("", "exception in fetching from firestore", e);
+        }
+        if (queryDocumentSnapshots != null) {
+            for (DocumentSnapshot doc : queryDocumentSnapshots.getDocuments()) {
+                setValue(queryDocumentSnapshots);
+            }
+            Log.w(TAG, "onEvent: " + queryDocumentSnapshots.getDocuments() );
         }
     }
 }
+

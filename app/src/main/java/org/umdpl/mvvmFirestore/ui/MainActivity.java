@@ -1,7 +1,10 @@
 package org.umdpl.mvvmFirestore.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,16 +20,23 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity1";
     private TextView tvTicker;
-    private TextView tv_price;
+    private TextView tvPrice;
     private HotStock model;
-
+    private Button button;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tvTicker = findViewById(R.id.tv_ticker);
-        tv_price = findViewById(R.id.tv_price);
-
+        tvPrice = findViewById(R.id.tv_price);
+        button = findViewById(R.id.btn_activity);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(),DetailActivity.class);
+                startActivity(intent);
+            }
+        });
         MainActivityViewModel viewModel =
                 ViewModelProviders.of(this).get(MainActivityViewModel.class);
         LiveData<DocumentSnapshot> liveData = viewModel.getDataSnapshotLiveData();

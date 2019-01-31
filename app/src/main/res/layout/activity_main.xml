@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ui.MainActivity"
-    android:orientation="horizontal">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tv_price"
@@ -24,5 +24,13 @@
         android:textSize="42sp"
         android:text="jj"
         android:layout_marginLeft="20sp"/>
+    <Button
+        android:id="@+id/btn_activity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="40sp"
+        android:text="Another Activity"
+        />
+
 
 </LinearLayout>
